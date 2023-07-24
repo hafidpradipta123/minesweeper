@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 class MyBomb extends StatelessWidget {
-  const MyBomb({super.key,  required this.child, required this.revealed, required this.function});
+  const MyBomb({super.key, required this.revealed, required this.function});
   final bool revealed;
-  final child;
   final function;
 
   @override
@@ -13,8 +12,7 @@ class MyBomb extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(1),
         child: Container(
-          color: Colors.grey[800],
-          child: Center(child: Text(child.toString())),
+          color: revealed ?  Colors.grey[800] : Colors.grey[400],
         ),
       ),
     );

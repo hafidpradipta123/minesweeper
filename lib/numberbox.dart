@@ -14,7 +14,7 @@ class MyNumberBox extends StatelessWidget {
         padding: const EdgeInsets.all(1),
         child: Container(
           color: revealed? Colors.grey[300] : Colors.grey[400],
-          child: Center(child: Text(child.toString())),
+          child: Center(child: Text( revealed?  child.toString(): '')),
         ),
       ),
     );
