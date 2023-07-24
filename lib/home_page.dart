@@ -14,7 +14,12 @@ class _HomePageState extends State<HomePage> {
   int numberOfSquares = 9 * 9;
   int numberInEachRow = 9;
   var squareStatus = [];
-  final List<int> bombLocation = [2, 4, 5, 7, 10, 61, 80];
+  final List<int> bombLocation = [
+    2,
+    4,
+
+  
+  ];
   bool bombsRevealed = false;
 
   @override
@@ -26,6 +31,16 @@ class _HomePageState extends State<HomePage> {
     }
     scanBombs();
   }
+
+void restartGame(){
+  setState(() {
+    bombsRevealed = false;
+    for(int i = 0; i< numberOfSquares; i++){
+      squareStatus[i][1]= false;
+    }
+
+  });
+}
 
   void revealBoxNumbers(int index) {
     if (squareStatus[index][0] != 0) {
@@ -166,35 +181,102 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void playerLost() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.grey[800],
+            title: const Center(
+                child: Text(
+              "YOU LOST",
+              style: TextStyle(color: Colors.white),
+            )),
+            actions: [
+              MaterialButton(
+                color: Colors.grey[100],
+                onPressed: (){
+                restartGame();
+                Navigator.pop(context);
+
+              },
+              child: Icon(Icons.refresh),)
+            ],
+          );
+        });
+  }
+
+
+void playerWon(){
+   showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            backgroundColor: Colors.grey[800],
+            title: const Center(
+                child: Text(
+              "YOU WIN",
+              style: TextStyle(color: Colors.green),
+            )),
+            actions: [
+              MaterialButton(
+                color: Colors.grey[100],
+                onPressed: () {
+                  restartGame();
+                  Navigator.pop(context);
+                },
+                child: Icon(Icons.refresh),
+              )
+            ],
+          );
+        });
+
+}
+
+void checkWinner(){
+  int unrevealedBoxes = 0;
+  for (int i = 0; i< numberOfSquares; i++){
+    if (squareStatus[i][1] == false) {
+      unrevealedBoxes++;
+    };
+  }
+
+  if(unrevealedBoxes == bombLocation.length){
+    playerWon();
+  }
+}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: Column(children: [
-        Container(
+        SizedBox(
           height: 150,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              const Column(
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '6',
-                    style: TextStyle(fontSize: 40),
+                    bombLocation.length.toString(),
+                    style: const TextStyle(fontSize: 40),
                   ),
-                  Text(" B O M B ")
+                  const Text(" B O M B ")
                 ],
               ),
-              Card(
-                child: Icon(
-                  Icons.refresh,
-                  color: Colors.white,
-                  size: 40,
+              GestureDetector(
+                onTap: restartGame,
+                child: Card(
+                  child:const  Icon(
+                    Icons.refresh,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                  color: Colors.grey[700],
                 ),
-                color: Colors.grey[700],
               ),
-              Column(
+              const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text('0', style: TextStyle(fontSize: 40)),
@@ -218,6 +300,7 @@ class _HomePageState extends State<HomePage> {
                       setState(() {
                         bombsRevealed = true;
                       });
+                      playerLost();
                       //lost
                     },
                   );
@@ -228,6 +311,7 @@ class _HomePageState extends State<HomePage> {
                     function: () {
                       //reveal
                       revealBoxNumbers(index);
+                      checkWinner();
                     },
                   );
                 }
